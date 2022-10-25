@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GH_Linear_Cutting
+namespace My_ToolBox
 {
     class LinerCuttingClass
     {
-        List<int> desiredLengths;     // Lengths of required blanks
-        List<int> amount;             // Number of blanks for each length
-        int whipLength;               // Whip length
-        int endSawCut;                // End saw cut      
-        int toolWidth;                // Tool width
-        int headlessRetreat;          // Unconditional withdrawal
+        List<int> desiredLengths;     //Длины необходимых заготовок
+        List<int> amount;             //Количество заготовок для каждой длины
+        int whipLength;               //Длина хлыста
+        int endSawCut;                //Торцевой спил       
+        int toolWidth;                //Ширина инструмента 
+        int headlessRetreat;          //Безусловный отход
 
-        List<List<int>> cuts;         // Blank lengths for each whip
-        List<int> repeats;            // Number of repetitions of each whip
-        List<int> retreats;           // Balance per whip
-        List<int> usingLength;        // Used length of each whip
+        List<List<int>> cuts;         //Длины заготовок для каждого хлыста
+        List<int> repeats;            //Количество повторов каждого хлыста
+        List<int> retreats;           //Остаток на каждый хлыст
+        List<int> usingLength;        //Использованной длины каждого хлыста
 
-        //Variables
+        //Переменные из макроса VB
         double[] schet = { 0, 0, 0, 0 };
         double[] schetDl = { 0, 0, 0, 0 };
 
@@ -29,20 +29,20 @@ namespace GH_Linear_Cutting
 
         int[] l;
         int[] k;
-        int[] z = new int[201];
-        int[] zost = new int[201];
-        int[,] lovr = new int[201, 201];
+        int[] z;
+        int[] zost;
+        int[,] lovr;
         int[,] kvr;
-        int[] maxNumbVr = new int[201];
-        int[] sumLine = new int[201];
+        int[] maxNumbVr;
+        int[] sumLine;
 
         int[,] lvr;
-        int[] q = new int[30001];
-        int[] w = new int[30001];
+        int[] q;
+        int[] w;
 
-        int[,] lo = new int[201, 201];
-        int[] kol = new int[201];
-        int[] p = new int[201];
+        int[,] lo;
+        int[] kol;
+        int[] p;
         int[,] res;
 
         public List<List<int>> GetCuts()
@@ -63,7 +63,7 @@ namespace GH_Linear_Cutting
         public List<int> GetUsingLength()
         {
             return usingLength;
-        }
+        }        
 
         public LinerCuttingClass(List<int> desiredLengths_, List<int> amount_, int whipLength_, int endSawCut_, int toolWidth_, int headlessRetreat_)
         {
@@ -76,7 +76,7 @@ namespace GH_Linear_Cutting
             Calculate();
         }
 
-        // Trimming Zero Positions
+        //Подрезание нулевых позиций
         void CutMass()
         {
             for (i = w[y]; i <= maxNumbVr[x] - 1; i++)
@@ -88,9 +88,9 @@ namespace GH_Linear_Cutting
             lvr[maxNumbVr[x], x] = 0;
         }
 
-        // Basic cutting
+        //BaseLine Базовый раскрой
         void BaseLine()
-        {
+        {            
             zvr = line / l[1];
             if (zvr > k[1])
                 zvr = k[1];
@@ -120,7 +120,7 @@ namespace GH_Linear_Cutting
             }
         }
 
-        //Algorithm for preparing an array for calculations
+        //Алгоритм подготовка массива для вычислений
         void Optimiz()
         {
             int len = line - sumLine[x];
@@ -141,15 +141,15 @@ namespace GH_Linear_Cutting
                     }
                     else
                         if (dif > 0 && q[i] < (q[dif] + L))
-                    {
-                        q[i] = q[dif] + L;
-                        w[i] = j;
-                    }
-                }
+                        {
+                                q[i] = q[dif] + L;
+                                w[i] = j;
+                        }
+                }               
             }
         }
 
-        //Forming a cut for the remainder
+        //Формирование раскроя на остаток
         void OstLine()
         {
             int kv;
@@ -169,12 +169,12 @@ namespace GH_Linear_Cutting
                 }
                 else
                     if (maxNumbVr[x] > 1)
-                {
-                    CutMass();
-                    Optimiz();
-                    ind = w[y];
-                    continue;
-                }
+                    {
+                        CutMass();
+                        Optimiz();
+                        ind = w[y];
+                        continue;
+                    }
                 if (kv == 0 && maxNumbVr[x] == 1)
                 {
                     y = 1;
@@ -185,12 +185,12 @@ namespace GH_Linear_Cutting
 
         void Result()
         {
-            cuts = new List<List<int>>();
-            repeats = new List<int>();
-            retreats = new List<int>();
-            usingLength = new List<int>();
+           cuts = new List<List<int>>();         
+           repeats = new List<int>();          
+           retreats = new List<int>();
+           usingLength = new List<int>();  
 
-            List<int> workpieces;
+            List<int> workpieces; 
             for (i = 1; i <= hl - 1; i++)
             {
                 x = 0;
@@ -199,7 +199,7 @@ namespace GH_Linear_Cutting
                 res[i + 1, 1] = i;
                 res[i + 1, 4] = kol[i];
 
-                repeats.Add(kol[i]); //Number of repetitions of each whip
+                repeats.Add(kol[i]); //Количество повторов каждого хлыста
                 workpieces = new List<int>();
                 for (j = 1; j <= z[i]; j++)
                 {
@@ -209,7 +209,7 @@ namespace GH_Linear_Cutting
                     sum = sum + lo[i, j];
                     schet[3] = schet[3] + 1;
                     schetDl[3] = schetDl[3] + lo[i, j] - cut;
-                    workpieces.Add(res[i + 1, j + 4]); // Workpiece size in a whip
+                    workpieces.Add(res[i + 1, j + 4]); //Размер заготовки в хлысте
                     if (i > 1 && res[i + 1, j + 4] == res[i, j + 4])
                         x = x + 1;
                     else
@@ -221,18 +221,18 @@ namespace GH_Linear_Cutting
                 cuts.Add(workpieces);
                 res[i + 1, 2] = sum + torc;
                 res[i + 1, 3] = line + torc - res[i + 1, 2];
-                usingLength.Add(res[i + 1, 2]);  // Used
-                retreats.Add(res[i + 1, 3]);     // remainder
+                usingLength.Add(res[i + 1, 2]);  //Использовано
+                retreats.Add(res[i + 1, 3]);     //Остаток
 
-                if (x == z[i] && z[i] == z[i - 1])
+                if (x == z[i] && z[i] == z[i - 1])   
                 {
-                    kol[i - 1 - pov] = kol[i - 1 - pov] + 1;            // Increasing the number of repetitions of the previous whip
+                    kol[i - 1 - pov] = kol[i - 1 - pov] + 1;            //Увеличиваем количество повторов предыдущего хлыста
                     repeats[repeats.Count - 2] = kol[i - 1 - pov];
                     pov = pov + 1;
                     usingLength.Remove(usingLength.Last());
                     retreats.Remove(retreats.Last());
                     repeats.Remove(repeats.Last());
-                    cuts.Remove(cuts.Last());
+                    cuts.Remove(cuts.Last());                           
                     sdv = sdv + 1;
                 }
             }
@@ -241,11 +241,38 @@ namespace GH_Linear_Cutting
                 return;
             else
             {
-                throw new Exception("Error! Possibility of incorrect cutting");
+                throw new Exception("Ошибка! Возможен неверный раскрой");
                 //return false;
             }
         }
 
+        void ResizeArray(ref int[,] original, int rows, int cols)
+        {
+            var newArray = new int[rows, cols];
+            int minRows = Math.Min(rows, original.GetLength(0));
+            int minCols = Math.Min(cols, original.GetLength(1));
+            for (int i = 0; i < minRows; i++)
+                for (int j = 0; j < minCols; j++)
+                    newArray[i, j] = original[i, j];
+            original = newArray;
+        }
+
+        void ResizeArrays(int n)
+        {
+            ResizeArray(ref kvr, maxNumb + 1, n);
+            ResizeArray(ref lvr, maxNumb + 1, n);
+            ResizeArray(ref kvr, maxNumb + 1, n);
+            ResizeArray(ref lovr, n, n);
+            ResizeArray(ref lo, n, n);
+            ResizeArray(ref res, n, n);
+
+            Array.Resize(ref z, n);
+            Array.Resize(ref zost, n);
+            Array.Resize(ref maxNumbVr, n);
+            Array.Resize(ref sumLine, n);
+            Array.Resize(ref kol, n);
+            Array.Resize(ref p, n);
+        }
         void Calculate()
         {
             cut = toolWidth;
@@ -255,26 +282,40 @@ namespace GH_Linear_Cutting
             maxNumb = amount.Count;
             maxNumbMem = maxNumb;
 
+            int max_it = 200; //maxNumb
+
             l = new int[maxNumb + 2];
             k = new int[maxNumb + 2];
-            kvr = new int[maxNumb + 1, 201];
-            lvr = new int[maxNumb + 1, 201];
-            res = new int[maxNumb + 1, maxNumb + 1];
+            kvr = new int[maxNumb + 1, max_it + 1];
+            lvr = new int[maxNumb + 1, max_it + 1];
+            res = new int[max_it + 1, max_it + 1];
+            q = new int[line+1];
+            w = new int[line+1];
+            
+            z = new int[max_it+1];
+            zost = new int[max_it + 1];
+            lovr = new int[max_it + 1, max_it + 1];
+            maxNumbVr = new int[max_it + 1];
+            sumLine = new int[max_it + 1];
 
-            //Reading into an array
+            lo = new int[max_it + 1, max_it + 1];
+            kol = new int[max_it + 1];
+            p = new int[max_it + 1];
+
+            //Считывание в массив
             j = 1;
             foreach (int len in desiredLengths)
             {
                 l[j] = len + cut;
                 if (l[j] + torc > line)
-                    throw new Exception("Detail " + j + " longer than the original workpiece");
+                    throw new Exception("Деталь " + j + " длиннее исходной заготовки");
                 k[j] = amount[j - 1];
                 schet[1] += k[j];
                 schetDl[1] += (l[j] - cut) * k[j];
                 j++;
             }
 
-            //Sort descending
+            //Сортировка по убыванию
             int vl;
             int vk;
             for (i = 1; i <= maxNumb - 1; i++)
@@ -293,10 +334,10 @@ namespace GH_Linear_Cutting
             z[1] = 0;
             y = line;
 
-            //Control algorithm
+            //Управляющий алгоритм
             while (k[1] > 0)
             {
-                for (i = 1; i <= 100; i++)
+                for (i = 1; i <= max_it; i++)
                     zost[i] = 0;
 
                 BaseLine();
@@ -320,7 +361,7 @@ namespace GH_Linear_Cutting
                     }
                     else
                         if (sumLine[x] > sumLine[x - 1])
-                        pop = x;
+                            pop = x;
                 }
                 for (i = 1; i <= pop; i++)
                 {
@@ -342,10 +383,12 @@ namespace GH_Linear_Cutting
                 }
                 z[hl] = pop + zost[pop];
                 hl = hl + 1;
-                if (hl == 200)
+                if (hl == max_it)
                 {
-                    Result();
-                    return;
+                    max_it *= 2;
+                    ResizeArrays(max_it+1);
+                    //Result();
+                    //return;
                 }
 
                 if (maxNumb > 1)
@@ -356,7 +399,7 @@ namespace GH_Linear_Cutting
                             for (i = 1; i <= maxNumb; i++)
                             {
                                 k[i] = k[i + 1];
-                                l[i] = l[i + 1];
+                                l[i] = l[i + 1];                                
                             }
                             k[maxNumb] = 0;
                             l[maxNumb] = 0;
@@ -366,6 +409,7 @@ namespace GH_Linear_Cutting
                     }
             }//while (k[1]>0)   
             Result();
-        }
+        }        
+
     }
 }
