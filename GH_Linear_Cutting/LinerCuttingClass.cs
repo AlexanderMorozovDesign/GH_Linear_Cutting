@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace My_ToolBox
+namespace GH_Linear_Cutting
 {
     class LinerCuttingClass
     {
-        List<int> desiredLengths;     //Длины необходимых заготовок
-        List<int> amount;             //Количество заготовок для каждой длины
-        int whipLength;               //Длина хлыста
-        int endSawCut;                //Торцевой спил       
-        int toolWidth;                //Ширина инструмента 
-        int headlessRetreat;          //Безусловный отход
+        List<int> desiredLengths;     //Lengths of required workpieces
+        List<int> amount;             //Number of blanks for each length
+        int whipLength;               //Whip length
+        int endSawCut;                //end cut     
+        int toolWidth;                //Tool Width 
+        int headlessRetreat;          //Unconditional withdrawal
 
-        List<List<int>> cuts;         //Длины заготовок для каждого хлыста
-        List<int> repeats;            //Количество повторов каждого хлыста
-        List<int> retreats;           //Остаток на каждый хлыст
-        List<int> usingLength;        //Использованной длины каждого хлыста
+        List<List<int>> cuts;         //Lengths of blanks for each whip
+        List<int> repeats;            //Number of repetitions of each whip
+        List<int> retreats;           //Residue on every whip
+        List<int> usingLength;        //Used length of each whip
 
-        //Переменные из макроса VB
+        //
         double[] schet = { 0, 0, 0, 0 };
         double[] schetDl = { 0, 0, 0, 0 };
 
@@ -120,7 +120,7 @@ namespace My_ToolBox
             }
         }
 
-        //Алгоритм подготовка массива для вычислений
+        //Algorithm for preparing an array for calculations
         void Optimiz()
         {
             int len = line - sumLine[x];
@@ -149,7 +149,7 @@ namespace My_ToolBox
             }
         }
 
-        //Формирование раскроя на остаток
+        //Formation of nesting for the remainder
         void OstLine()
         {
             int kv;
@@ -199,7 +199,7 @@ namespace My_ToolBox
                 res[i + 1, 1] = i;
                 res[i + 1, 4] = kol[i];
 
-                repeats.Add(kol[i]); //Количество повторов каждого хлыста
+                repeats.Add(kol[i]); //Number of repetitions of each whip
                 workpieces = new List<int>();
                 for (j = 1; j <= z[i]; j++)
                 {
@@ -209,7 +209,7 @@ namespace My_ToolBox
                     sum = sum + lo[i, j];
                     schet[3] = schet[3] + 1;
                     schetDl[3] = schetDl[3] + lo[i, j] - cut;
-                    workpieces.Add(res[i + 1, j + 4]); //Размер заготовки в хлысте
+                    workpieces.Add(res[i + 1, j + 4]); //The size of the workpiece in the whip
                     if (i > 1 && res[i + 1, j + 4] == res[i, j + 4])
                         x = x + 1;
                     else
@@ -221,12 +221,12 @@ namespace My_ToolBox
                 cuts.Add(workpieces);
                 res[i + 1, 2] = sum + torc;
                 res[i + 1, 3] = line + torc - res[i + 1, 2];
-                usingLength.Add(res[i + 1, 2]);  //Использовано
-                retreats.Add(res[i + 1, 3]);     //Остаток
+                usingLength.Add(res[i + 1, 2]);  //used
+                retreats.Add(res[i + 1, 3]);     //Remainder
 
                 if (x == z[i] && z[i] == z[i - 1])   
                 {
-                    kol[i - 1 - pov] = kol[i - 1 - pov] + 1;            //Увеличиваем количество повторов предыдущего хлыста
+                    kol[i - 1 - pov] = kol[i - 1 - pov] + 1;            //Increase the number of repetitions of the previous whip
                     repeats[repeats.Count - 2] = kol[i - 1 - pov];
                     pov = pov + 1;
                     usingLength.Remove(usingLength.Last());
@@ -241,7 +241,7 @@ namespace My_ToolBox
                 return;
             else
             {
-                throw new Exception("Ошибка! Возможен неверный раскрой");
+                throw new Exception("Error! Possibility of incorrect cutting");
                 //return false;
             }
         }
@@ -302,7 +302,7 @@ namespace My_ToolBox
             kol = new int[max_it + 1];
             p = new int[max_it + 1];
 
-            //Считывание в массив
+            //Reading into an array
             j = 1;
             foreach (int len in desiredLengths)
             {
@@ -315,7 +315,7 @@ namespace My_ToolBox
                 j++;
             }
 
-            //Сортировка по убыванию
+            //Descending sort
             int vl;
             int vk;
             for (i = 1; i <= maxNumb - 1; i++)
@@ -334,7 +334,7 @@ namespace My_ToolBox
             z[1] = 0;
             y = line;
 
-            //Управляющий алгоритм
+            //Control algorithm
             while (k[1] > 0)
             {
                 for (i = 1; i <= max_it; i++)
