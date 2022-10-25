@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CuttingStock
+namespace GH_Linear_Cutting
 {
     class LinerCuttingClass
     {
-        List<int> desiredLengths;     //Длины необходимых заготовок Lengths of required blanks
-        List<int> amount;             //Количество заготовок для каждой длины Number of blanks for each length
-        int whipLength;               //Длина хлыста Whip length
-        int endSawCut;                //Торцевой спил End saw cut      
-        int toolWidth;                //Ширина инструмента Tool width
-        int headlessRetreat;          //Безусловный отход Unconditional withdrawal
+        List<int> desiredLengths;     // Lengths of required blanks
+        List<int> amount;             // Number of blanks for each length
+        int whipLength;               // Whip length
+        int endSawCut;                // End saw cut      
+        int toolWidth;                // Tool width
+        int headlessRetreat;          // Unconditional withdrawal
 
-        List<List<int>> cuts;         //Длины заготовок для каждого хлыста Blank lengths for each whip
-        List<int> repeats;            //Количество повторов каждого хлыста Number of repetitions of each whip
-        List<int> retreats;           //Остаток на каждый хлыст Balance per whip
-        List<int> usingLength;        //Использованной длины каждого хлыста Used length of each whip
+        List<List<int>> cuts;         // Blank lengths for each whip
+        List<int> repeats;            // Number of repetitions of each whip
+        List<int> retreats;           // Balance per whip
+        List<int> usingLength;        // Used length of each whip
 
         //Variables
         double[] schet = { 0, 0, 0, 0 };
@@ -76,7 +76,7 @@ namespace CuttingStock
             Calculate();
         }
 
-        //Подрезание нулевых позиций Trimming Zero Positions
+        // Trimming Zero Positions
         void CutMass()
         {
             for (i = w[y]; i <= maxNumbVr[x] - 1; i++)
@@ -88,7 +88,7 @@ namespace CuttingStock
             lvr[maxNumbVr[x], x] = 0;
         }
 
-        //BaseLine Базовый раскрой Basic cutting
+        // Basic cutting
         void BaseLine()
         {
             zvr = line / l[1];
@@ -209,7 +209,7 @@ namespace CuttingStock
                     sum = sum + lo[i, j];
                     schet[3] = schet[3] + 1;
                     schetDl[3] = schetDl[3] + lo[i, j] - cut;
-                    workpieces.Add(res[i + 1, j + 4]); //Размер заготовки в хлысте Workpiece size in a whip
+                    workpieces.Add(res[i + 1, j + 4]); // Workpiece size in a whip
                     if (i > 1 && res[i + 1, j + 4] == res[i, j + 4])
                         x = x + 1;
                     else
@@ -221,12 +221,12 @@ namespace CuttingStock
                 cuts.Add(workpieces);
                 res[i + 1, 2] = sum + torc;
                 res[i + 1, 3] = line + torc - res[i + 1, 2];
-                usingLength.Add(res[i + 1, 2]);  //Использовано Used
-                retreats.Add(res[i + 1, 3]);     //Остаток remainder
+                usingLength.Add(res[i + 1, 2]);  // Used
+                retreats.Add(res[i + 1, 3]);     // remainder
 
                 if (x == z[i] && z[i] == z[i - 1])
                 {
-                    kol[i - 1 - pov] = kol[i - 1 - pov] + 1;            //Увеличиваем количество повторов предыдущего хлыста Increasing the number of repetitions of the previous whip
+                    kol[i - 1 - pov] = kol[i - 1 - pov] + 1;            // Increasing the number of repetitions of the previous whip
                     repeats[repeats.Count - 2] = kol[i - 1 - pov];
                     pov = pov + 1;
                     usingLength.Remove(usingLength.Last());
@@ -241,7 +241,7 @@ namespace CuttingStock
                 return;
             else
             {
-                throw new Exception("Ошибка! Возможен неверный раскрой");
+                throw new Exception("Error! Possibility of incorrect cutting");
                 //return false;
             }
         }
@@ -261,20 +261,20 @@ namespace CuttingStock
             lvr = new int[maxNumb + 1, 201];
             res = new int[maxNumb + 1, maxNumb + 1];
 
-            //Считывание в массив Reading into an array
+            //Reading into an array
             j = 1;
             foreach (int len in desiredLengths)
             {
                 l[j] = len + cut;
                 if (l[j] + torc > line)
-                    throw new Exception("Деталь " + j + " длиннее исходной заготовки");
+                    throw new Exception("Detail " + j + " longer than the original workpiece");
                 k[j] = amount[j - 1];
                 schet[1] += k[j];
                 schetDl[1] += (l[j] - cut) * k[j];
                 j++;
             }
 
-            //Сортировка по убыванию Sort descending
+            //Sort descending
             int vl;
             int vk;
             for (i = 1; i <= maxNumb - 1; i++)
@@ -293,7 +293,7 @@ namespace CuttingStock
             z[1] = 0;
             y = line;
 
-            //Управляющий алгоритм Control algorithm
+            //Control algorithm
             while (k[1] > 0)
             {
                 for (i = 1; i <= 100; i++)

@@ -59,6 +59,7 @@
     <Compile Include="GHLinearCuttingComponent.cs" />
     <Compile Include="GH_Linear_CuttingInfo.cs" />
     <Compile Include="LinerCuttingClass.cs" />
+    <Compile Include="BarMenu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
